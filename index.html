@@ -22,6 +22,13 @@
       text-align: center;
     }
     h2 { color: #58cc02; }
+    .streak { font-size: 16px; color: #ff9600; margin-bottom: 10px; }
+    .language-selector { margin-bottom: 15px; }
+    .language-selector select {
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
     .question { font-size: 18px; margin: 20px 0; }
     .options button {
       display: block;
@@ -52,34 +59,174 @@
 
 <div class="app">
   <h2>Mini Duolingo</h2>
+  <div class="streak" id="streak">Streak: 0</div>
+  <div class="language-selector">
+    <select id="language" onchange="changeLanguage()">
+      <option value="spanish">Spanish</option>
+      <option value="french">French</option>
+      <option value="german">German</option>
+      <option value="italian">Italian</option>
+      <option value="portuguese">Portuguese</option>
+    </select>
+  </div>
   <div class="question" id="question"></div>
   <div class="options" id="options"></div>
   <button class="next" onclick="nextQuestion()">Next</button>
 </div>
 
 <script>
-const questions = [
-  {
-    q: "Translate: Apple",
-    options: ["Manzana", "Perro", "Casa"],
-    answer: "Manzana"
-  },
-  {
-    q: "Translate: Dog",
-    options: ["Gato", "Perro", "Libro"],
-    answer: "Perro"
-  },
-  {
-    q: "Translate: House",
-    options: ["Casa", "Agua", "Fuego"],
-    answer: "Casa"
-  }
-];
+const questions = {
+  spanish: [
+    {
+      q: "Translate: Apple",
+      options: ["Manzana", "Perro", "Casa"],
+      answer: "Manzana"
+    },
+    {
+      q: "Translate: Dog",
+      options: ["Gato", "Perro", "Libro"],
+      answer: "Perro"
+    },
+    {
+      q: "Translate: House",
+      options: ["Casa", "Agua", "Fuego"],
+      answer: "Casa"
+    },
+    {
+      q: "Translate: Water",
+      options: ["Agua", "Fuego", "Sol"],
+      answer: "Agua"
+    },
+    {
+      q: "Translate: Book",
+      options: ["Libro", "Mesa", "Puerta"],
+      answer: "Libro"
+    }
+  ],
+  french: [
+    {
+      q: "Translate: Apple",
+      options: ["Pomme", "Chien", "Maison"],
+      answer: "Pomme"
+    },
+    {
+      q: "Translate: Dog",
+      options: ["Chat", "Chien", "Livre"],
+      answer: "Chien"
+    },
+    {
+      q: "Translate: House",
+      options: ["Maison", "Eau", "Feu"],
+      answer: "Maison"
+    },
+    {
+      q: "Translate: Water",
+      options: ["Eau", "Feu", "Soleil"],
+      answer: "Eau"
+    },
+    {
+      q: "Translate: Book",
+      options: ["Livre", "Table", "Porte"],
+      answer: "Livre"
+    }
+  ],
+  german: [
+    {
+      q: "Translate: Apple",
+      options: ["Apfel", "Hund", "Haus"],
+      answer: "Apfel"
+    },
+    {
+      q: "Translate: Dog",
+      options: ["Katze", "Hund", "Buch"],
+      answer: "Hund"
+    },
+    {
+      q: "Translate: House",
+      options: ["Haus", "Wasser", "Feuer"],
+      answer: "Haus"
+    },
+    {
+      q: "Translate: Water",
+      options: ["Wasser", "Feuer", "Sonne"],
+      answer: "Wasser"
+    },
+    {
+      q: "Translate: Book",
+      options: ["Buch", "Tisch", "Tür"],
+      answer: "Buch"
+    }
+  ],
+  italian: [
+    {
+      q: "Translate: Apple",
+      options: ["Mela", "Cane", "Casa"],
+      answer: "Mela"
+    },
+    {
+      q: "Translate: Dog",
+      options: ["Gatto", "Cane", "Libro"],
+      answer: "Cane"
+    },
+    {
+      q: "Translate: House",
+      options: ["Casa", "Acqua", "Fuoco"],
+      answer: "Casa"
+    },
+    {
+      q: "Translate: Water",
+      options: ["Acqua", "Fuoco", "Sole"],
+      answer: "Acqua"
+    },
+    {
+      q: "Translate: Book",
+      options: ["Libro", "Tavolo", "Porta"],
+      answer: "Libro"
+    }
+  ],
+  portuguese: [
+    {
+      q: "Translate: Apple",
+      options: ["Maçã", "Cão", "Casa"],
+      answer: "Maçã"
+    },
+    {
+      q: "Translate: Dog",
+      options: ["Gato", "Cão", "Livro"],
+      answer: "Cão"
+    },
+    {
+      q: "Translate: House",
+      options: ["Casa", "Água", "Fogo"],
+      answer: "Casa"
+    },
+    {
+      q: "Translate: Water",
+      options: ["Água", "Fogo", "Sol"],
+      answer: "Água"
+    },
+    {
+      q: "Translate: Book",
+      options: ["Livro", "Mesa", "Porta"],
+      answer: "Livro"
+    }
+  ]
+};
 
+let currentLanguage = 'spanish';
 let index = 0;
+let streak = parseInt(localStorage.getItem('streak')) || 0;
+
+document.getElementById('streak').innerText = `Streak: ${streak}`;
+
+function changeLanguage() {
+  currentLanguage = document.getElementById('language').value;
+  index = 0;
+  loadQuestion();
+}
 
 function loadQuestion() {
-  const q = questions[index];
+  const q = questions[currentLanguage][index];
   document.getElementById("question").innerText = q.q;
   const optionsDiv = document.getElementById("options");
   optionsDiv.innerHTML = "";
@@ -98,18 +245,22 @@ function checkAnswer(button, correct) {
 
   if (button.innerText === correct) {
     button.classList.add("correct");
+    streak++;
   } else {
     button.classList.add("wrong");
     buttons.forEach(btn => {
       if (btn.innerText === correct) btn.classList.add("correct");
     });
+    streak = 0;
   }
+  localStorage.setItem('streak', streak);
+  document.getElementById('streak').innerText = `Streak: ${streak}`;
 }
 
 function nextQuestion() {
   index++;
-  if (index >= questions.length) {
-    document.querySelector(".app").innerHTML = "<h2>Finished 🎉</h2>";
+  if (index >= questions[currentLanguage].length) {
+    document.querySelector(".app").innerHTML = "<h2>Finished 🎉</h2><p>Your final streak: " + streak + "</p>";
     return;
   }
   loadQuestion();
