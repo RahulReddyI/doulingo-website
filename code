@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Duolingo Clone</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .app {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 350px;
+      text-align: center;
+    }
+    h2 { color: #58cc02; }
+    .question { font-size: 18px; margin: 20px 0; }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      background: #fff;
+      transition: 0.2s;
+    }
+    .options button:hover { background: #f0f0f0; }
+    .correct { background: #58cc02 !important; color: white; }
+    .wrong { background: #ff4b4b !important; color: white; }
+    .next {
+      margin-top: 15px;
+      padding: 10px;
+      background: #58cc02;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <h2>Mini Duolingo</h2>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <button class="next" onclick="nextQuestion()">Next</button>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "Translate: Apple",
+    options: ["Manzana", "Perro", "Casa"],
+    answer: "Manzana"
+  },
+  {
+    q: "Translate: Dog",
+    options: ["Gato", "Perro", "Libro"],
+    answer: "Perro"
+  },
+  {
+    q: "Translate: House",
+    options: ["Casa", "Agua", "Fuego"],
+    answer: "Casa"
+  }
+];
+
+let index = 0;
+
+function loadQuestion() {
+  const q = questions[index];
+  document.getElementById("question").innerText = q.q;
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  q.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.innerText = opt;
+    btn.onclick = () => checkAnswer(btn, q.answer);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(button, correct) {
+  const buttons = document.querySelectorAll(".options button");
+  buttons.forEach(btn => btn.disabled = true);
+
+  if (button.innerText === correct) {
+    button.classList.add("correct");
+  } else {
+    button.classList.add("wrong");
+    buttons.forEach(btn => {
+      if (btn.innerText === correct) btn.classList.add("correct");
+    });
+  }
+}
+
+function nextQuestion() {
+  index++;
+  if (index >= questions.length) {
+    document.querySelector(".app").innerHTML = "<h2>Finished 🎉</h2>";
+    return;
+  }
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
